@@ -77,9 +77,10 @@ public class FXMLDocumentController implements Initializable {
 
     // Create the Binary To Text Task
     private String asciiToBinary(String text) {
-        StringBuilder result = new StringBuilder();
+        byte[] _bytes = text.getBytes();
+        StringBuilder result = new StringBuilder(_bytes.length);
 
-        for (byte ch : text.getBytes()) {
+        for (byte ch : _bytes) {
             String binary = Integer.toBinaryString(ch);
             switch (binary.length()) {
                 case 4:
