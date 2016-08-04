@@ -20,7 +20,7 @@ public class Stribin extends Application {
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
-        stage.setTitle("Stribin");
+        stage.setTitle("StriBin");
         stage.setResizable(false);
         stage.show();
     }
