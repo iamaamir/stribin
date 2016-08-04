@@ -31,7 +31,7 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void handleBinaryToText(ActionEvent event) {
-        ExecutorService thread = Executors.newCachedThreadPool();
+        ExecutorService thread = Executors.newFixedThreadPool(1);
         thread.submit(() -> {
             final String result = binaryToAscii(binaryTextArea.getText());
             Platform.runLater(() -> {
@@ -44,7 +44,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private void handleTextToBinary(ActionEvent event) {
 
-        ExecutorService thread = Executors.newCachedThreadPool();
+        ExecutorService thread = Executors.newFixedThreadPool(1);
         thread.submit(() -> {
             final String result = asciiToBinary(asciiTextArea.getText());
             Platform.runLater(() -> {
@@ -77,9 +77,8 @@ public class FXMLDocumentController implements Initializable {
 
     // Create the Binary To Text Task
     private String asciiToBinary(String text) {
-        byte[] _bytes = text.getBytes();
+        final byte[] _bytes = text.getBytes();
         StringBuilder result = new StringBuilder(_bytes.length);
-
         for (byte ch : _bytes) {
             String binary = Integer.toBinaryString(ch);
             switch (binary.length()) {
