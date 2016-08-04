@@ -28,6 +28,7 @@ public class FXMLDocumentController implements Initializable {
     TextArea binaryTextArea;
     @FXML
     StackPane animationPane;
+    private static final int AMOUNT_OF_BITS = 8;
 
     @FXML
     private void handleBinaryToText(ActionEvent event) {
@@ -62,14 +63,14 @@ public class FXMLDocumentController implements Initializable {
     // Create the Binary To Text Task task
     protected String binaryToAscii(final String input) {
 
-        if (input.length() % 8 != 0) {
+        if (input.length() % AMOUNT_OF_BITS != 0) {
             throw new IllegalArgumentException("input must be a multiple of 8");
 
         }
         StringBuilder result = new StringBuilder();
 
-        for (int i = 0; i < input.length(); i += 8) {
-            int charCode = Integer.parseInt(input.substring(i, i + 8), 2);
+        for (int i = 0; i < input.length(); i += AMOUNT_OF_BITS) {
+            int charCode = Integer.parseInt(input.substring(i, i + AMOUNT_OF_BITS), 2);
             result.append((char) charCode);
         }
         return result.toString();
@@ -78,7 +79,7 @@ public class FXMLDocumentController implements Initializable {
     // Create the Binary To Text Task
     private String asciiToBinary(String text) {
         final byte[] _bytes = text.getBytes();
-        StringBuilder result = new StringBuilder(_bytes.length);
+        StringBuilder result = new StringBuilder(_bytes.length * 8);
         for (byte ch : _bytes) {
             String binary = Integer.toBinaryString(ch);
             switch (binary.length()) {
