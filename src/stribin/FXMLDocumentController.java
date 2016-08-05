@@ -1,20 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package stribin;
 
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.application.Platform;
+import java.util.concurrent.Callable;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -32,43 +29,40 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void handleBinaryToText(ActionEvent event) {
-        ExecutorService thread = Executors.newFixedThreadPool(1);
-        thread.submit(() -> {
-            final String result = binaryToAscii(binaryTextArea.getText());
-            Platform.runLater(() -> {
-                asciiTextArea.setText(result);
-            });
-        });
-        thread.shutdown();
+        Callable<String> task = () -> binaryToAscii(binaryTextArea.getText());
+        try {
+            runTask(task, asciiTextArea);
+        } catch (InterruptedException | ExecutionException ex) {
+            asciiTextArea.setText(ex.toString());
+        }
+
     }
 
     @FXML
     private void handleTextToBinary(ActionEvent event) {
-
-        ExecutorService thread = Executors.newFixedThreadPool(1);
-        thread.submit(() -> {
-            final String result = asciiToBinary(asciiTextArea.getText());
-            Platform.runLater(() -> {
-                binaryTextArea.setText(result);
-            });
-        });
-        thread.shutdown();
+        Callable<String> task = () -> asciiToBinary(asciiTextArea.getText());
+        try {
+            runTask(task, binaryTextArea);
+        } catch (InterruptedException | ExecutionException ex) {
+            binaryTextArea.setText(ex.toString());
+        }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        
     }
 
     // Create the Binary To Text Task task
-    protected String binaryToAscii(final String input) {
+    private String binaryToAscii(final String input) {
 
         if (input.length() % AMOUNT_OF_BITS != 0) {
-            throw new IllegalArgumentException("input must be a multiple of 8");
-
+            String msg = "Input must be a multiple of " + AMOUNT_OF_BITS;
+            binaryTextArea.setText(msg);
+            throw new IllegalArgumentException(msg);
         }
         final int INPUT_LEN = input.length();
-        final int BUILDER_SIZE = INPUT_LEN/8;
+        final int BUILDER_SIZE = INPUT_LEN / 8;
         StringBuilder result = new StringBuilder(BUILDER_SIZE);
 
         for (int i = 0; i < INPUT_LEN; i += AMOUNT_OF_BITS) {
@@ -90,6 +84,15 @@ public class FXMLDocumentController implements Initializable {
             }
         }
         return result.toString();
+    }
+
+    private void runTask(Callable<String> task, TextArea textArea) throws InterruptedException, ExecutionException {
+        ExecutorService thread = Executors.newFixedThreadPool(1);
+        final String result = thread.submit(task).get();
+        Platform.runLater(() -> {
+            textArea.setText(result);
+        });
+        thread.shutdown();
     }
 
 }
