@@ -67,9 +67,11 @@ public class FXMLDocumentController implements Initializable {
             throw new IllegalArgumentException("input must be a multiple of 8");
 
         }
-        StringBuilder result = new StringBuilder();
+        final int INPUT_LEN = input.length();
+        final int BUILDER_SIZE = INPUT_LEN/8;
+        StringBuilder result = new StringBuilder(BUILDER_SIZE);
 
-        for (int i = 0; i < input.length(); i += AMOUNT_OF_BITS) {
+        for (int i = 0; i < INPUT_LEN; i += AMOUNT_OF_BITS) {
             int charCode = Integer.parseInt(input.substring(i, i + AMOUNT_OF_BITS), 2);
             result.append((char) charCode);
         }
@@ -86,9 +88,7 @@ public class FXMLDocumentController implements Initializable {
                 result.append((val & 128) == 0 ? 0 : 1);
                 val <<= 1;
             }
-
         }
-
         return result.toString();
     }
 
