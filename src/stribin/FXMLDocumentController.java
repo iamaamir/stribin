@@ -12,6 +12,9 @@ import javafx.scene.layout.StackPane;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import javafx.scene.control.TextFormatter;
 
 /**
  *
@@ -50,7 +53,17 @@ public class FXMLDocumentController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+        //Validate the Binary TextArea
+        final Pattern binaryRegex = Pattern.compile("\\A[01\\n]*\\Z");
+        Predicate<String> tester = binaryRegex.asPredicate();
+        binaryTextArea.setTextFormatter(new TextFormatter<>(change -> {
+            if (!tester.test(change.getControlNewText())) {
+                return null;
+            }
+            return change;
+        }));
+//        binaryTextArea.setTextFormatter();
+
     }
 
     // Create the Binary To Text Task task
